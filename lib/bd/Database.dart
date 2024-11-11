@@ -9,7 +9,7 @@ class BancoDeDados {
       nome: "Épico",
     ),
     Cardcontainer(
-      nome: "Lírico",
+      nome: "Líricos",
     ),
     Cardcontainer(
       nome: "Dramático",
