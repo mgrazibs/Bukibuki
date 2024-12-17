@@ -1,23 +1,20 @@
-import 'dart:async';
-
-import 'package:path/path.dart';
-import 'package:projeto/bd/db_helper.dart';
-import 'package:projeto/domain/card_livro.dart';
-import 'package:projeto/BD/database.dart';
+import 'package:bukibuki/bancodedados/db_helper.dart';
+import 'package:bukibuki/domain/daoo_dao.dart';
 import 'package:sqflite/sqflite.dart';
 
 class PacoteDao {
   listarPacotes() async {
     Database database = await DBHelper().initDB();
-    String sql = 'SELECT * FROM PACOTE;';
 
+    String sql = 'SELECT * FROM PACOTE;';
     var result = await database.rawQuery(sql);
 
-    List<CardLivro> lista = [];
+    List<daoodao> lista = [];
     for (var json in result) {
-      CardLivro pacote = CardLivro.fromjson(json);
+      daoodao pacote = daoodao.fromJson(json);
       lista.add(pacote);
     }
+
     return lista;
       }
 }
