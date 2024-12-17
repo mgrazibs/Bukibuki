@@ -12,7 +12,7 @@ class _TelaCompraState extends State<TelaCompra> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFC4FFCE),
+      backgroundColor: const Color(0xFFF4F6FC),
       body: ListView(
         children: [
           Row(
@@ -21,7 +21,7 @@ class _TelaCompraState extends State<TelaCompra> {
               Icon(
                 Icons.arrow_back,
                 size: 60,
-                color: Color(0xFF000000),
+                color: Color(0xFF3A6332),
               ),
               Icon(Icons.person, size: 60),
             ],
@@ -67,13 +67,13 @@ class _TelaCompraState extends State<TelaCompra> {
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.bold,
-              color: Color(0xFFFF0000),
+              color: Color(0xFF3A6332),
             ),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 8),
           Image.network(
-            'https://m.media-amazon.com/images/I/91N9kjbqxWS._AC_UF1000,1000_QL80_.jpg',
+            'https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTa1kP1PDURRDpD3VhU86WdpSWVWEOk23F8CADmRaXikA4qDmXdBJfBCCtNBqQY31VbRJcJiJ_U_SwnH2T-OLDIhtqYD8cTCFWVg72ZZP5q0bX1SzEeKOhp&usqp=CAE',
             height: 410,
           ),
           SizedBox(height: 8),
@@ -105,13 +105,13 @@ class _TelaCompraState extends State<TelaCompra> {
               ),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0XFFFFFFFF),
+              backgroundColor: Color(0XFFD3D3D3),
             ),
           ),
           SizedBox(height: 8),
           ElevatedButton(
             onPressed: () {
-              Navigator.push(
+              Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) {
@@ -129,7 +129,7 @@ class _TelaCompraState extends State<TelaCompra> {
               ),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0XFFFFFFFF),
+              backgroundColor: Color(0XFFD3D3D3),
             ),
           ),
         ],
