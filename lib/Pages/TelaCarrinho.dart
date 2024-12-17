@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:myapp/Pages/TelaCompra.dart';
-import 'package:myapp/bd/database2.dart';
-import 'package:myapp/Domain/domain.dart';
+import 'package:myapp/pages/TelaCompra.dart';
+import 'package:myapp/domain/domain.dart';
+import 'package:myapp/bd/pacote_dao.dart';
+import 'package:myapp/pages/register_package.dart';
 
 class TelaCarrinho extends StatefulWidget {
   const TelaCarrinho({super.key});
@@ -11,6 +12,17 @@ class TelaCarrinho extends StatefulWidget {
 }
 
 class _TelaCarrinhoState extends State<TelaCarrinho> {
+  @override
+  List<CompraLivro> pacotes = [];
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  loadData() async {
+    pacotes = await PacoteDao().listarPacotes();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,9 +56,9 @@ class _TelaCarrinhoState extends State<TelaCarrinho> {
           ),
           ListView.builder(
             shrinkWrap: true,
-            itemCount: Database.pacotes.length,
+            itemCount: pacotes.length,
             itemBuilder: (context, index) {
-              return buildLivro(Database.pacotes[index]);
+              return buildLivro(pacotes[index]);
             },
           ),
           SizedBox(height: 30),
@@ -104,7 +116,21 @@ class _TelaCarrinhoState extends State<TelaCarrinho> {
           ),
           SizedBox(height: 8),
           TextButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return const RegisterPackage();
+                  },
+                ),
+              ).then(
+                    (value) async {
+                  await loadData();
+                  setState(() {});
+                },
+              );
+            },
             style: TextButton.styleFrom(
               backgroundColor: Colors.red,
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
@@ -123,15 +149,14 @@ class _TelaCarrinhoState extends State<TelaCarrinho> {
     );
   }
 
+
   buildLivro(CompraLivro livro) {
     return Column(
       children: [
         Text(
           livro.titulo,
           style: TextStyle(
-              fontSize: 15,
-               fontWeight: FontWeight.bold,
-                color: Colors.black),
+              fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black),
           textAlign: TextAlign.center,
         ),
         Text(
@@ -196,7 +221,7 @@ class _TelaCarrinhoState extends State<TelaCarrinho> {
 
   double calcularSubtotal() {
     double subtotal = 0.0;
-    for (var pacote in Database.pacotes) {
+    for (var pacote in pacotes) {
       subtotal += pacote.valor * pacote.cont;
     }
     return subtotal;
