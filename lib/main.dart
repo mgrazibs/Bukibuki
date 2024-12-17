@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:projeto/P1.dart';
+import 'package:bukibuki/login.dart';
+
 
 void main() {
   runApp(
-      const MaterialApp(
-          home: Tela(),
-              ),
-        );
+    const MaterialApp(
+        home:login()
+    ),
+  );
 }
