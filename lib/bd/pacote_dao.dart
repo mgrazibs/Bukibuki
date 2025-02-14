@@ -8,7 +8,7 @@ class PacoteDao {
     database.insert('PACOTE', compralivro.toJson());
   }
 
-  listarPacotes() async {
+  Future<List<CompraLivro>>listarPacotes() async {
     Database database = await DBHelper().initDB();
 
     String sql = 'SELECT * FROM PACOTE;';

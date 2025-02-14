@@ -4,6 +4,7 @@ class CompraLivro {
   late String titulo;
   late int cont;
   late double valor;
+  late String cidade;
 
 
   CompraLivro({
@@ -12,6 +13,7 @@ class CompraLivro {
     required this.cont,
     required this.valor,
     required this.id,
+    required this.cidade
   });
 
 
@@ -21,6 +23,7 @@ class CompraLivro {
     titulo = json['titulo'];
     cont = json['cont'];
     valor= json['valor'];
+    cidade = json['cidade'];
   }
 
   Map<String, dynamic> toJson() {
@@ -31,6 +34,7 @@ class CompraLivro {
     json['urlmage'] = urlImage;
     json['cont'] = cont;
     json['valor'] = valor;
+    json['cidade'] = cidade;
 
     return json;
   }

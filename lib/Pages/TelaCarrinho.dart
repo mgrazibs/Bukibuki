@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:myapp/pages/TelaCompra.dart';
 import 'package:myapp/domain/domain.dart';
 import 'package:myapp/bd/pacote_dao.dart';
+import 'package:myapp/Pages/map_page.dart';
 import 'package:myapp/pages/register_package.dart';
+import 'package:geocoding/geocoding.dart';
 
 class TelaCarrinho extends StatefulWidget {
   const TelaCarrinho({super.key});
@@ -167,6 +169,37 @@ class _TelaCarrinhoState extends State<TelaCarrinho> {
             color: Color(0xFFFF0000),
           ),
           textAlign: TextAlign.center,
+        ),
+        Text(
+          livro.cidade,
+          style: GoogleFonts.montserrat(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        TextButton(
+          onPressed: () async {
+            List<Location> locations = await locationFromAddress(pacote.cidade);
+            Location location =  locations[0];
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return MapPage(
+                    lat: location.latitude,
+                    long: location.longitude,
+                  );
+                },
+              ),
+            );
+          },
+          child: Text(
+            'Ver no mapa',
+            style: GoogleFonts.montserrat(
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ),
         SizedBox(height: 8),
         Image.network(

@@ -16,6 +16,7 @@ class _RegisterPackageState extends State<RegisterPackage> {
   TextEditingController tituloController = TextEditingController();
   TextEditingController contController = TextEditingController();
   TextEditingController valorController = TextEditingController();
+  TextEditingController cidadeController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -52,6 +53,10 @@ class _RegisterPackageState extends State<RegisterPackage> {
           buildTextFormField(
             controller: valorController,
             text: 'Valor do Livro',
+          ),
+          buildTextFormField(
+            controller: cidadeController,
+            text: 'Nome da cidade em que o livro foi comprado',
           ),
           const SizedBox(height: 8),
           ElevatedButton(
@@ -142,6 +147,7 @@ class _RegisterPackageState extends State<RegisterPackage> {
     String titulo = tituloController.text;
     int cont = int.parse(contController.text);
     double valor = double.parse(valorController.text);
+    String cidade = cidadeController;
 
     CompraLivro compralivro = CompraLivro(
       id: 0,
