@@ -38,6 +38,7 @@ dependencies:
 google_fonts:
 
 sqflite:
+  path:
 
   google_maps_flutter:
     geocoding:

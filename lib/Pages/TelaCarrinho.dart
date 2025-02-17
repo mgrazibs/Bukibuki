@@ -5,6 +5,7 @@ import 'package:myapp/bd/pacote_dao.dart';
 import 'package:myapp/Pages/map_page.dart';
 import 'package:myapp/pages/register_package.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class TelaCarrinho extends StatefulWidget {
   const TelaCarrinho({super.key});
@@ -14,249 +15,194 @@ class TelaCarrinho extends StatefulWidget {
 }
 
 class _TelaCarrinhoState extends State<TelaCarrinho> {
+  late Future<List<CompraLivro>> futurePacotes;
+
   @override
-  List<CompraLivro> pacotes = [];
   void initState() {
     super.initState();
-    loadData();
+    futurePacotes = loadData();
   }
 
-  loadData() async {
-    pacotes = await PacoteDao().listarPacotes();
+  Future<List<CompraLivro>> loadData() async {
+    return await PacoteDao().listarPacotes();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFC4FFCE),
-      body: ListView(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: FutureBuilder<List<CompraLivro>>(
+        future: futurePacotes,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text('Ocorreu um erro!'));
+          }
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          List<CompraLivro> pacotes = snapshot.data!;
+
+          return Column(
             children: [
-              IconButton(
-                  onPressed: () {
-                    Navigator.pop(
-                      context,
-                    );
-                  },
-                  icon: Icon(
-                    Icons.arrow_back,
-                    size: 60,
-                    color: Colors.black,
-                  )),
-              Text(
-                'CARRINHO',
-                style: TextStyle(
-                  fontSize: 35,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF000000),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back,
+                          size: 40, color: Colors.black),
+                    ),
+                    const Text(
+                      'CARRINHO',
+                      style: TextStyle(
+                          fontSize: 30,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ),
+                    const Icon(Icons.person, size: 40),
+                  ],
                 ),
               ),
-              Icon(Icons.person, size: 60),
-            ],
-          ),
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: pacotes.length,
-            itemBuilder: (context, index) {
-              return buildLivro(pacotes[index]);
-            },
-          ),
-          SizedBox(height: 30),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
+              Expanded(
+                child: ListView.builder(
+                  itemCount: pacotes.length,
+                  itemBuilder: (context, index) {
+                    return buildLivro(pacotes[index]);
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'SUBTOTAL: ${calcularSubtotal(pacotes).toStringAsFixed(2)} R\$',
+                style:
+                    const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10),
+              TextButton(
                 onPressed: () {
-                  Navigator.pop(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) {
-                        return TelaCompra();
-                      },
-                    ),
-                  );
+                        builder: (context) => const RegisterPackage()),
+                  ).then((_) {
+                    setState(() {
+                      futurePacotes = loadData();
+                    });
+                  });
                 },
-                child: const Text(
-                  'EXCLUIR',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0XFFFFFFFF),
+                child: const Text(
+                  'Comprar',
+                  style: TextStyle(fontSize: 20, color: Colors.white),
                 ),
               ),
-              ElevatedButton(
-                onPressed: () {},
-                child: const Text(
-                  'SALVAR PARA MAIS TARDE',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0XFFFFFFFF),
-                ),
-              )
+              const SizedBox(height: 20),
             ],
-          ),
-          SizedBox(height: 30),
-          Text(
-            'SUBTOTAL: ${calcularSubtotal().toStringAsFixed(2)} R\$',
-            style: TextStyle(
-              fontSize: 35,
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 8),
-          TextButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return const RegisterPackage();
-                  },
-                ),
-              ).then(
-                    (value) async {
-                  await loadData();
-                  setState(() {});
-                },
-              );
-            },
-            style: TextButton.styleFrom(
-              backgroundColor: Colors.red,
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-            ),
-            child: const Text(
-              'Comprar',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          SizedBox(height: 8),
-        ],
+          );
+        },
       ),
     );
   }
 
-
-  buildLivro(CompraLivro livro) {
-    return Column(
-      children: [
-        Text(
-          livro.titulo,
-          style: TextStyle(
-              fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black),
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          '${livro.valor} R\$',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFFFF0000),
+  Widget buildLivro(CompraLivro livro) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Column(
+        children: [
+          Text(
+            livro.titulo,
+            style: const TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
-        Text(
-          livro.cidade,
-          style: GoogleFonts.montserrat(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
+          Text(
+            '${livro.valor.toStringAsFixed(2)} R\$',
+            style: const TextStyle(
+                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.red),
+            textAlign: TextAlign.center,
           ),
-        ),
-        TextButton(
-          onPressed: () async {
-            List<Location> locations = await locationFromAddress(pacote.cidade);
-            Location location =  locations[0];
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return MapPage(
-                    lat: location.latitude,
-                    long: location.longitude,
-                  );
-                },
-              ),
-            );
-          },
-          child: Text(
-            'Ver no mapa',
+          Text(
+            livro.cidade,
             style: GoogleFonts.montserrat(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
+                fontSize: 16, fontWeight: FontWeight.w500),
+          ),
+          TextButton(
+            onPressed: () async {
+              List<Location> locations =
+                  await locationFromAddress(livro.cidade);
+              if (locations.isNotEmpty) {
+                Location location = locations.first;
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MapPage(
+                        lat: location.latitude, long: location.longitude),
+                  ),
+                );
+              }
+            },
+            child: Text(
+              'Ver no mapa',
+              style: GoogleFonts.montserrat(
+                  fontSize: 14, fontWeight: FontWeight.w500),
             ),
           ),
-        ),
-        SizedBox(height: 8),
-        Image.network(
-          livro.urlImage,
-          height: 200,
-        ),
-        SizedBox(height: 30),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            IconButton(
+          const SizedBox(height: 8),
+          Image.network(
+            livro.urlImage,
+            height: 150,
+            fit: BoxFit.cover,
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
                 onPressed: () {
                   setState(() {
-                    if (livro.cont > 0) {
-                      livro.cont--;
-                    }
+                    if (livro.cont > 0) livro.cont--;
                   });
                 },
-                icon: Icon(
-                  Icons.delete,
-                  size: 60,
-                  color: Color(0xFFBB0A0A),
-                )),
-            Container(
-              padding: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-              color: Color(0xFF5A625A),
-              child: Text(
-                '${livro.cont}',
-                style: TextStyle(
-                    fontSize: 35,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
+                icon: const Icon(Icons.delete, size: 40, color: Colors.red),
               ),
-            ),
-            IconButton(
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                color: Colors.green.shade700,
+                child: Text(
+                  '${livro.cont}',
+                  style: const TextStyle(
+                      fontSize: 24,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+              IconButton(
                 onPressed: () {
                   setState(() {
                     livro.cont++;
                   });
                 },
-                icon: Icon(
-                  Icons.add,
-                  size: 60,
-                  color: Color(0xFF22AF06),
-                )),
-          ],
-        ),
-        SizedBox(height: 30),
-      ],
+                icon: const Icon(Icons.add, size: 40, color: Colors.green),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+        ],
+      ),
     );
   }
 
-  double calcularSubtotal() {
-    double subtotal = 0.0;
-    for (var pacote in pacotes) {
-      subtotal += pacote.valor * pacote.cont;
-    }
-    return subtotal;
+  double calcularSubtotal(List<CompraLivro> pacotes) {
+    return pacotes.fold(
+        0.0, (total, livro) => total + (livro.valor * livro.cont));
   }
 }

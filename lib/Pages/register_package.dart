@@ -147,7 +147,7 @@ class _RegisterPackageState extends State<RegisterPackage> {
     String titulo = tituloController.text;
     int cont = int.parse(contController.text);
     double valor = double.parse(valorController.text);
-    String cidade = cidadeController;
+    String cidade = cidadeController.text;
 
     CompraLivro compralivro = CompraLivro(
       id: 0,
@@ -155,6 +155,7 @@ class _RegisterPackageState extends State<RegisterPackage> {
       titulo: titulo,
       cont: cont,
       valor: valor,
+      cidade: cidade
     );
 
     await PacoteDao().salvarPacote(compralivro);
